@@ -1,5 +1,5 @@
 #!/bin/bash
-
+clear
 PURPLE='\033[1;33m'
 RESET='\033[0m'
 
@@ -9,22 +9,13 @@ progress_bar() {
     local bar_length=50
 
     while ps -p $pid > /dev/null; do
-        # Menghitung persentase menggunakan `du` untuk memperkirakan progres
-        local total_size=$(du -sb "$REPO_NAME" 2>/dev/null | awk '{print $1}')
-        local cloned_size=$(du -sb "$REPO_NAME"/* 2>/dev/null | awk '{sum += $1} END {print sum}')
-
-        if [ -n "$total_size" ] && [ "$total_size" -gt 0 ]; then
-            local percent=$((cloned_size * 100 / total_size))
-            local filled_length=$((percent * bar_length / 100))
-            local bar=$(printf "%-${bar_length}s" "#" | sed "s/ /#/g")
-            printf "\r${PURPLE}[${bar:0:filled_length}${RESET}${bar:filled_length} ${percent}%%]"
-        fi
-
+        # Menghitung persentase dengan cara yang lebih sederhana
+        echo -ne "\r${PURPLE}[${bar:0:filled_length}${RESET}${bar:filled_length} ...... ${PURPLE}]${RESRT}"
         sleep 1
     done
 
     # Menampilkan progress bar penuh jika cloning selesai
-    printf "\r${PURPLE}[${bar:0:bar_length}${RESET} 100%%]\n"
+    printf "\r${PURPLE}[${bar:0:bar_length}${RESET} 100%%\n"
 }
 
 # Nama folder yang akan dibuat
@@ -37,9 +28,9 @@ if [ -d "$REPO_NAME" ]; then
 fi
 
 # Meminta Personal Access Token GitHub
-read -sp "Masukkan Personal Access Token GitHub: " TOKEN
+read -sp "Masukkan Access Token Script: " TOKEN
 echo
-
+clear
 # Menampilkan pesan sebelum mulai cloning
 echo -e "${PURPLE}Tunggu sebentar...${RESET}"
 
@@ -76,7 +67,7 @@ fi
 
 # Menampilkan pesan setelah cloning selesai dan menambahkan jeda
 echo -e "${PURPLE}Downloading selesai!${RESET}"
-sleep 3  # Jeda selama 2 detik
+sleep 3  # Jeda selama 3 detik
 
 # Menyalin file dari folder repositori ke lokasi tujuan
 cp docker/windocker.sh ~/
@@ -85,7 +76,7 @@ cp docker/windocker.sh ~/
 rm -rf "$REPO_NAME"
 echo ""
 echo -e "${PURPLE}Menjalankan Script dalam 5 detik..${RESET}"
-for ((i=10; i>0; i--)); do
+for ((i=5; i>0; i--)); do
     echo -ne "${PURPLE}$i detik tersisa...\r${RESET}"
     sleep 1
 done
