@@ -1,5 +1,4 @@
 #!/bin/bash
-cilukbwaa
 clear
 PURPLE='\033[1;33m'
 RESET='\033[0m'
