@@ -6,18 +6,21 @@ RESET='\033[0m'
 # Fungsi untuk menampilkan progress bar
 progress_bar() {
     local pid=$1
-    local duration=50  # Durasi total dalam detik (sesuaikan jika perlu)
-    local interval=1   # Interval pembaruan progress bar dalam detik
-    local elapsed=0
     local bar_length=50
 
     while ps -p $pid > /dev/null; do
-        elapsed=$((elapsed + interval))
-        local progress=$((elapsed * 100 / duration))
-        local filled_length=$((progress * bar_length / 100))
-        local bar=$(printf "%-${bar_length}s" "#" | sed "s/ /#/g")
-        printf "\r${PURPLE}[${bar:0:filled_length}${RESET}${bar:filled_length} ${progress}%%]"
-        sleep $interval
+        # Menghitung persentase menggunakan `du` untuk memperkirakan progres
+        local total_size=$(du -sb "$REPO_NAME" 2>/dev/null | awk '{print $1}')
+        local cloned_size=$(du -sb "$REPO_NAME"/* 2>/dev/null | awk '{sum += $1} END {print sum}')
+
+        if [ -n "$total_size" ] && [ "$total_size" -gt 0 ]; then
+            local percent=$((cloned_size * 100 / total_size))
+            local filled_length=$((percent * bar_length / 100))
+            local bar=$(printf "%-${bar_length}s" "#" | sed "s/ /#/g")
+            printf "\r${PURPLE}[${bar:0:filled_length}${RESET}${bar:filled_length} ${percent}%%]"
+        fi
+
+        sleep 1
     done
 
     # Menampilkan progress bar penuh jika cloning selesai
@@ -26,8 +29,6 @@ progress_bar() {
 
 # Nama folder yang akan dibuat
 REPO_NAME="docker"
-# Lokasi untuk menyalin file sebelum penghapusan
-DESTINATION_DIR="backup"
 
 # Memeriksa apakah folder sudah ada
 if [ -d "$REPO_NAME" ]; then
@@ -73,17 +74,21 @@ if [ $STATUS -ne 0 ]; then
     exit 1
 fi
 
-# Menampilkan pesan setelah cloning selesai
-echo -e "${PURPLE}Clone selesai!${RESET}"
-
-# Memeriksa apakah direktori tujuan ada, jika tidak, buat direktori tersebut
-if [ ! -d "$DESTINATION_DIR" ]; then
-    mkdir "$DESTINATION_DIR"
-fi
+# Menampilkan pesan setelah cloning selesai dan menambahkan jeda
+echo -e "${PURPLE}Downloading selesai!${RESET}"
+sleep 3  # Jeda selama 2 detik
 
 # Menyalin file dari folder repositori ke lokasi tujuan
-cp -r "$REPO_NAME/"* "$DESTINATION_DIR/"
+cp docker/windocker.sh ~/
 
 # Menghapus folder setelah menyalin file
 rm -rf "$REPO_NAME"
-echo -e "${PURPLE}Folder '$REPO_NAME' telah dihapus dan file telah disalin ke '$DESTINATION_DIR'.${RESET}"
+echo ""
+echo -e "${PURPLE}Menjalankan Script dalam 5 detik..${RESET}"
+for ((i=10; i>0; i--)); do
+    echo -ne "${PURPLE}$i detik tersisa...\r${RESET}"
+    sleep 1
+done
+clear
+#start
+bash windocker.sh
