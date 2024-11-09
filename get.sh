@@ -1,7 +1,7 @@
 #!/bin/bash
 clear
-PURPLE='\033[1;33m'
-RESET='\033[0m'
+PURPLE='\033[0;32m'
+RESET='\033[0;37m'
 
 # Fungsi untuk menampilkan progress bar
 progress_bar() {
@@ -70,7 +70,7 @@ echo -e "${PURPLE}Downloading selesai!${RESET}"
 sleep 3  # Jeda selama 3 detik
 
 # Menyalin file dari folder repositori ke lokasi tujuan
-cp docker/windocker.sh ~/
+cp docker/progrest.sh ~/
 
 # Menghapus folder setelah menyalin file
 rm -rf "$REPO_NAME"
@@ -82,4 +82,4 @@ for ((i=5; i>0; i--)); do
 done
 clear
 #start
-bash windocker.sh
+bash progrest.sh
