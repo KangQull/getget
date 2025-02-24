@@ -1,0 +1,22 @@
+services:
+  windows:
+    image: dockurr/windows
+    container_name: windows
+    environment:
+      VERSION: $win
+      REGION: en-US
+      KEYBOARD: en-US
+      USERNAME: $usr
+      PASSWORD: $ps
+      RAM_SIZE: $ram
+      CPU_CORES: $cpu
+      DISK_SIZE: $disk
+    devices:
+      - /dev/kvm
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - $pr:8006
+      - $port:3389/tcp
+      - 3389:3389/udp
+    restart: no
